@@ -8,7 +8,8 @@ find . -name '*.class' | xargs -I {0} rm {0}
 
 $JAVA_HOME/bin/javac src/alex/voltmeter/Voltmeter.java
 
-TIME="$[30 * 60]"
+TIME="$[1 * 60]"
+
 nohup $JAVA_HOME/bin/java -cp src alex.voltmeter.Voltmeter /dev/ttyACM0 9999999 $TIME >>/home/alex/projects/voltmeter/output.log &
 
 sleep 3
