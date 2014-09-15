@@ -1,28 +1,31 @@
-package alex.voltmeter;
+package carojkov.voltmeter;
 
 import java.io.*;
 import java.util.*;
 import java.text.*;
 
-public class Voltmeter extends TimerTask
+public class VoltmeterImpl extends TimerTask
 {
   private RandomAccessFile _meter;
   private Timer _timer;
   private float _voltFactor = 0.0556f;
   private int _probeCounter = 0;
   private int _probesTotal;
-  private int _pause;
+  private long _voltageResetInterval;
+  private long _lastVoltageReset;
+  private long _measureInterval;
+  private long _lastMeasure;
   private boolean _isVerbose = false;
 
   private DecimalFormat _format = new DecimalFormat("0000");
 
-  public Voltmeter(String[] args) throws IOException
+  public VoltmeterImpl(String[] args) throws IOException
   {
     _meter = new RandomAccessFile(args[0], "rwd");
 
     _probesTotal = Integer.parseInt(args[1]);
 
-    _pause = 1000 * Integer.parseInt(args[2]);
+    _measureInterval = 1000 * Integer.parseInt(args[2]);
 
     _timer = new Timer();
 
@@ -125,7 +128,7 @@ public class Voltmeter extends TimerTask
 
   private void schedule()
   {
-    _timer.schedule(this, new java.util.Date(), _pause);
+    _timer.schedule(this, new java.util.Date(), _measureInterval);
   }
 
   private void readVoltage() throws IOException, ParseException
@@ -156,7 +159,7 @@ public class Voltmeter extends TimerTask
 
   public static void main(String[] args) throws Exception
   {
-    Voltmeter t = new Voltmeter(args);
+    VoltmeterImpl t = new VoltmeterImpl(args);
     t.reset();
     t.configure();
     t.resetVoltage();
