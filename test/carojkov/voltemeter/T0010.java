@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Calendar;
-import java.util.Map;
+import java.util.LinkedList;
 
 /**
  * Test Scheduler class (2014-9-14 3:53:34:345 PM)
@@ -25,11 +25,9 @@ public class T0010 implements TestStand
   private final static int second = 34;
   private final static int millisecond = 345;
 
-  private final static int period = 1000 * 60;
-
   private Calendar _calendar;
 
-  private Map<Calendar,String> _testMap;
+  private LinkedList<String> _expected;
 
   @Before
   public void init()
@@ -52,25 +50,29 @@ public class T0010 implements TestStand
                     boolean isFirst,
                     boolean isLast)
   {
-    System.out.println("T0010.reset["
-                       + cycle
-                       + ':'
-                       + check
-                       + ':'
-                       + (isFirst ? "first" : (isLast ? "last" : ""))
-                       + "] "
-                       + date.getTime());
+    String str = "reset:"
+                 + date.getTime()
+                 + ':'
+                 + cycle
+                 + ':'
+                 + check
+                 + ':'
+                 + isFirst
+                 + ':'
+                 + isLast;
+    Assert.assertEquals(_expected.removeFirst(), str);
   }
 
   @Override
   public void test(Calendar date, int cycle, int check)
   {
-    System.out.println("T0010.test["
-                       + cycle
-                       + ':'
-                       + check
-                       + "] "
-                       + date.getTime());
+    String str = "test:"
+                 + date.getTime()
+                 + ':'
+                 + cycle
+                 + ':'
+                 + check;
+    Assert.assertEquals(_expected.removeFirst(), str);
   }
 
   @Test
@@ -80,29 +82,29 @@ public class T0010 implements TestStand
     Calendar startTime = startDateCalculator.getStartTime(_calendar,
                                                           StartTime.NOW);
 
+    _expected = new LinkedList<>();
+    _expected.add("reset:Tue Oct 14 15:53:40 PDT 2014:0:0:true:false");
+    _expected.add("test:Tue Oct 14 15:53:42 PDT 2014:0:0");
+    _expected.add("test:Tue Oct 14 15:53:44 PDT 2014:0:1");
+    _expected.add("test:Tue Oct 14 15:53:46 PDT 2014:0:2");
+    _expected.add("test:Tue Oct 14 15:53:48 PDT 2014:0:3");
+    _expected.add("reset:Tue Oct 14 15:53:50 PDT 2014:1:4:false:false");
+    _expected.add("test:Tue Oct 14 15:53:52 PDT 2014:1:0");
+    _expected.add("test:Tue Oct 14 15:53:54 PDT 2014:1:1");
+    _expected.add("test:Tue Oct 14 15:53:56 PDT 2014:1:2");
+    _expected.add("test:Tue Oct 14 15:53:58 PDT 2014:1:3");
+    _expected.add("reset:Tue Oct 14 15:54:00 PDT 2014:2:4:false:false");
+    _expected.add("test:Tue Oct 14 15:54:02 PDT 2014:2:0");
+    _expected.add("test:Tue Oct 14 15:54:04 PDT 2014:2:1");
+    _expected.add("test:Tue Oct 14 15:54:06 PDT 2014:2:2");
+    _expected.add("test:Tue Oct 14 15:54:08 PDT 2014:2:3");
+    _expected.add("reset:Tue Oct 14 15:54:10 PDT 2014:3:4:false:true");
+
     TestDriver s = new TestDriver(this, startTime, 10, 2, 3);
     while (!s.isComplete()) {
       Thread.sleep(1000);
     }
-  }
 
-  private void check(Calendar c,
-                     int year,
-                     int month,
-                     int day,
-                     int am_pm,
-                     int hour,
-                     int minute,
-                     int second,
-                     int millisecond)
-  {
-    Assert.assertEquals(year, c.get(Calendar.YEAR));
-    Assert.assertEquals(month, c.get(Calendar.MONTH));
-    Assert.assertEquals(day, c.get(Calendar.DAY_OF_MONTH));
-    Assert.assertEquals(am_pm, c.get(Calendar.AM_PM));
-    Assert.assertEquals(hour, c.get(Calendar.HOUR));
-    Assert.assertEquals(minute, c.get(Calendar.MINUTE));
-    Assert.assertEquals(second, c.get(Calendar.SECOND));
-    Assert.assertEquals(millisecond, c.get(Calendar.MILLISECOND));
+    Assert.assertTrue(_expected.isEmpty());
   }
 }

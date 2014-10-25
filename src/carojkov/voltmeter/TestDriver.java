@@ -59,10 +59,10 @@ public class TestDriver implements Runnable
   {
     if (isCycleEnd()) {
       boolean isFirst = _cycle == -1;
-      boolean isLast = (_cycle + 1 == _cycles);
+      _cycle++;
+      boolean isLast = _cycle == _cycles;
       _testStand.reset(_nextTrigger, _cycle, _check, isFirst, isLast);
       _cycleEnd = getDatePastInterval(_cycleEnd, _cycleDuration);
-      _cycle++;
       _check = 0;
     }
     else {
