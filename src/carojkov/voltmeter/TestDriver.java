@@ -36,6 +36,7 @@ public class TestDriver implements Runnable
                     long checkInterval,
                     int cycles)
   {
+    assert cycleDuration >= checkInterval;
     _testStand = testStand;
     _cycleDuration = cycleDuration;
     _checkInterval = checkInterval;

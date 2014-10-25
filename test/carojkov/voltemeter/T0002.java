@@ -9,7 +9,7 @@ import org.junit.Test;
 import java.util.Calendar;
 
 /**
- * Test Scheduler class (2014-9-14 11:59:34:345 PM)
+ * Test StartDateCalculator  class (2014-9-14 11:59:34:345 PM)
  */
 public class T0002
 {
