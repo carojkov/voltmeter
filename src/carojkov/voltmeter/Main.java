@@ -1,93 +1,58 @@
 package carojkov.voltmeter;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.io.IOException;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
 
-public class Main extends TimerTask
+public class Main
 {
-  private static final long timerTick = 100;
+  private Args _args;
 
-  private long _lastReset = -1;
-  private long _lastMeasure = -1;
-  private long _resetPeriod;
-  private long _measurePeriod;
-  //
-  private Timer _timer;
+  TestDriver _driver;
 
-  /**
-   * @param resetPeriod   - number of milliseconds between resets
-   * @param measurePeriod - number of milliseconds between measurements
-   */
-  public Main(long resetPeriod, long measurePeriod)
+  public Main(Args args)
   {
-    _resetPeriod = resetPeriod;
-    _measurePeriod = measurePeriod;
+    _args = args;
 
-    //_timer = new Timer();
+    StartTime t = _args.getArgEnum(StartTime.class, "-start");
+
+    Calendar start = StartDateCalculator.getStartTime(Calendar.getInstance(),
+                                                      t);
+
+    String voltmeterFile = _args.getArg("-in");
+
+    Voltmeter voltmeter = null;
+
+    try {
+      voltmeter = new Voltmeter(voltmeterFile);
+    } catch (IOException e) {
+      e.printStackTrace();
+
+      return;
+    }
+
+    long cycle = args.getArgSeconds("-cycle");
+    long check = args.getArgSeconds("-check");
+    int cycles = args.getArgInt("-cycles");
+
+    _driver = new TestDriver(voltmeter, start, cycle, check, cycles);
   }
 
-  public void start(boolean isAtMidnight)
-  {
-    final long now = System.currentTimeMillis();
-    final long delay;
-  }
-
-
-
-  @Override
   public void run()
   {
-    final long now = System.currentTimeMillis();
-
-    boolean isMeasured = false;
-
-    if (_lastReset == -1) {
-    }
-    else if (_lastMeasure == -1 || (now >= (_lastMeasure + _measurePeriod))) {
-      _lastMeasure = now;
-
-      measure(now);
-
-      isMeasured = true;
-    }
-
-    if (_lastReset == -1 || now >= (_lastReset + _resetPeriod)) {
-      _lastReset = now;
-
-      reset(now);
-
-      if (!isMeasured)
-        measure(now);
+    while (_driver.isComplete()) {
+      try {
+        Thread.sleep(5 * 1000);
+      } catch (InterruptedException e) {
+      }
     }
   }
 
-  private void measure(long time)
+  public static void main(String[] argsv)
   {
-    System.out.println("Main.measure " + new Date(time));
+    Args args = Args.parse(argsv);
+
+    Main main = new Main(args);
+
+    main.run();
   }
-
-  private void reset(long time)
-  {
-    System.out.println("Main.reset " + new Date(time));
-  }
-
-  public static void main(String[] args)
-  {
-    long resetPeriod = 1000 * 60 * 60 * 24;
-    long measurePeriod = 1000 * 1;
-
-//    Main main = new Main(resetPeriod, measurePeriod);
-
-    Calendar c = Calendar.getInstance();
-
-    c.set(Calendar.HOUR, 11);
-    c.set(Calendar.MINUTE, 59);
-
-
-  }
-
 }
