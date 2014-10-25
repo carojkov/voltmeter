@@ -4,6 +4,14 @@ import java.util.Calendar;
 
 public class Scheduler
 {
+  public Schedule makeSchedule(Calendar startTime,
+                               long resetInterval,
+                               long checkInterval,
+                               int cycles)
+  {
+    return new Schedule(startTime, resetInterval, checkInterval, cycles);
+  }
+
   public Calendar getStartTime(Calendar calendar, StartTime startTime)
   {
     calendar = (Calendar) calendar.clone();
