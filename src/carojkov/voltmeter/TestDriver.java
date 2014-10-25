@@ -1,11 +1,10 @@
 package carojkov.voltmeter;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class TesterDriver implements Runnable
+public class TestDriver implements Runnable
 {
   private final long sec = 1;
   private final long min = sec * 60;
@@ -16,13 +15,12 @@ public class TesterDriver implements Runnable
   private final long _checkInterval;
   private final int _cycles;
 
-  private Calendar _cycleStart;
   private Calendar _cycleEnd;
-  private Calendar _date;
-  private int _cycle = 0;
+  private Calendar _nextTrigger;
+  private int _cycle = -1;
   private int _check = 0;
 
-  private final Tester _tester;
+  private final TestStand _testStand;
 
   private final Timer _timer;
 
@@ -32,23 +30,23 @@ public class TesterDriver implements Runnable
    * @param checkInterval in seconds
    * @param cycles
    */
-  public TesterDriver(Tester tester,
-                      Calendar startTime,
-                      long cycleDuration,
-                      long checkInterval,
-                      int cycles)
+  public TestDriver(TestStand testStand,
+                    Calendar startTime,
+                    long cycleDuration,
+                    long checkInterval,
+                    int cycles)
   {
-    _tester = tester;
+    _testStand = testStand;
     _cycleDuration = cycleDuration;
     _checkInterval = checkInterval;
     _cycles = cycles;
 
-    _cycleStart = (Calendar) startTime.clone();
-    _cycleEnd = getDatePastInterval(_cycleStart, cycleDuration);
-    _date = (Calendar) _cycleStart.clone();
+    Calendar cycleStart = (Calendar) startTime.clone();
+    _nextTrigger = cycleStart;
+    _cycleEnd = _nextTrigger;
 
     _timer = new Timer(this.getClass().getName(), true);
-    _timer.schedule(createTimerTask(), _date.getTime());
+    _timer.schedule(createTimerTask(), cycleStart.getTime());
   }
 
   public boolean isComplete()
@@ -59,53 +57,32 @@ public class TesterDriver implements Runnable
   @Override
   public void run()
   {
-    if (isCycleStart()) {
-      testerStart(_date, _cycle);
+    if (isCycleEnd()) {
+      boolean isFirst = _cycle == -1;
+      boolean isLast = (_cycle + 1 == _cycles);
+      _testStand.reset(_nextTrigger, _cycle, _check, isFirst, isLast);
+      _cycleEnd = getDatePastInterval(_cycleEnd, _cycleDuration);
+      _cycle++;
       _check = 0;
     }
-    else if (isCycleEnd()) {
-      testerEnd(_date, _cycle, _check);
-      _cycleStart = _date;
-      _cycleEnd = getDatePastInterval(_cycleStart, _cycleDuration);
-      _cycle++;
-    }
     else {
-      testerTest(_date, _cycle, _check);
+      _testStand.test(_nextTrigger, _cycle, _check);
+      _check++;
     }
 
     if (_cycle == _cycles)
       return;
 
-    Calendar nextDate = getDatePastInterval(_date, _checkInterval);
+    Calendar nextDate = getDatePastInterval(_nextTrigger, _checkInterval);
 
-    _date = nextDate;
-    Date ddd = nextDate.getTime();
-    _timer.schedule(createTimerTask(), ddd);
-  }
+    _nextTrigger = nextDate;
 
-  public void testerStart(Calendar date, int cycle)
-  {
-    _tester.start(date, cycle);
-  }
-
-  public void testerEnd(Calendar date, int cycle, int check)
-  {
-    _tester.stop(date, cycle, check);
-  }
-
-  public void testerTest(Calendar date, int cycle, int check)
-  {
-    _tester.test(date, cycle, check);
-  }
-
-  private boolean isCycleStart()
-  {
-    return _date.equals(_cycleStart);
+    _timer.schedule(createTimerTask(), _nextTrigger.getTime());
   }
 
   private boolean isCycleEnd()
   {
-    return _date.equals(_cycleEnd);
+    return _nextTrigger.equals(_cycleEnd);
   }
 
   private TimerTask createTimerTask()
@@ -115,7 +92,7 @@ public class TesterDriver implements Runnable
       @Override
       public void run()
       {
-        TesterDriver.this.run();
+        TestDriver.this.run();
       }
     };
   }

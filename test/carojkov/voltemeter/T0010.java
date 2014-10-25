@@ -2,18 +2,19 @@ package carojkov.voltemeter;
 
 import carojkov.voltmeter.StartDateCalculator;
 import carojkov.voltmeter.StartTime;
-import carojkov.voltmeter.Tester;
-import carojkov.voltmeter.TesterDriver;
+import carojkov.voltmeter.TestDriver;
+import carojkov.voltmeter.TestStand;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Calendar;
+import java.util.Map;
 
 /**
  * Test Scheduler class (2014-9-14 3:53:34:345 PM)
  */
-public class T0010 implements Tester
+public class T0010 implements TestStand
 {
   private final static int year = 2014;
   private final static int month = 9;
@@ -26,7 +27,9 @@ public class T0010 implements Tester
 
   private final static int period = 1000 * 60;
 
-  Calendar _calendar;
+  private Calendar _calendar;
+
+  private Map<Calendar,String> _testMap;
 
   @Before
   public void init()
@@ -43,18 +46,18 @@ public class T0010 implements Tester
   }
 
   @Override
-  public void start(Calendar date, int cycle)
+  public void reset(Calendar date,
+                    int cycle,
+                    int check,
+                    boolean isFirst,
+                    boolean isLast)
   {
-    System.out.println("T0010.start [" + cycle + "] " + date.getTime());
-  }
-
-  @Override
-  public void stop(Calendar date, int cycle, int check)
-  {
-    System.out.println("T0010.stop["
+    System.out.println("T0010.reset["
                        + cycle
                        + ':'
                        + check
+                       + ':'
+                       + (isFirst ? "first" : (isLast ? "last" : ""))
                        + "] "
                        + date.getTime());
   }
@@ -71,14 +74,13 @@ public class T0010 implements Tester
   }
 
   @Test
-  public void test() throws InterruptedException
+  public void test_10_2_3() throws InterruptedException
   {
     StartDateCalculator startDateCalculator = new StartDateCalculator();
-
     Calendar startTime = startDateCalculator.getStartTime(_calendar,
                                                           StartTime.NOW);
 
-    TesterDriver s = new TesterDriver(this, startTime, 10, 2, 3);
+    TestDriver s = new TestDriver(this, startTime, 10, 2, 3);
     while (!s.isComplete()) {
       Thread.sleep(1000);
     }
