@@ -1,0 +1,6 @@
+<testplan>
+  <section schedule="0000.qa">
+    <section name="start time" start="0000.qa"/>
+    <section name="test driver" start="0010.qa"/>
+  </section>
+</testplan>
