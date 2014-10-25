@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Schedule implements Runnable
+public class TesterDriver implements Runnable
 {
   private final long sec = 1;
   private final long min = sec * 60;
@@ -22,7 +22,9 @@ public class Schedule implements Runnable
   private int _cycle = 0;
   private int _check = 0;
 
-  private Timer _timer = new Timer();
+  private final Tester _tester;
+
+  private final Timer _timer;
 
   /**
    * @param startTime
@@ -30,11 +32,13 @@ public class Schedule implements Runnable
    * @param checkInterval in seconds
    * @param cycles
    */
-  public Schedule(Calendar startTime,
-                  long cycleDuration,
-                  long checkInterval,
-                  int cycles)
+  public TesterDriver(Tester tester,
+                      Calendar startTime,
+                      long cycleDuration,
+                      long checkInterval,
+                      int cycles)
   {
+    _tester = tester;
     _cycleDuration = cycleDuration;
     _checkInterval = checkInterval;
     _cycles = cycles;
@@ -43,27 +47,30 @@ public class Schedule implements Runnable
     _cycleEnd = getDatePastInterval(_cycleStart, cycleDuration);
     _date = (Calendar) _cycleStart.clone();
 
+    _timer = new Timer(this.getClass().getName(), true);
     _timer.schedule(createTimerTask(), _date.getTime());
+  }
+
+  public boolean isComplete()
+  {
+    return _cycle == _cycles;
   }
 
   @Override
   public void run()
   {
     if (isCycleStart()) {
-      reset(_date);
-      check(_date);
-
+      testerStart(_date, _cycle);
+      _check = 0;
     }
     else if (isCycleEnd()) {
-      check(_date);
-      reset(_date);
-
+      testerEnd(_date, _cycle, _check);
       _cycleStart = _date;
       _cycleEnd = getDatePastInterval(_cycleStart, _cycleDuration);
       _cycle++;
     }
     else {
-      check(_date);
+      testerTest(_date, _cycle, _check);
     }
 
     if (_cycle == _cycles)
@@ -76,15 +83,19 @@ public class Schedule implements Runnable
     _timer.schedule(createTimerTask(), ddd);
   }
 
-  private void reset(Calendar date)
+  public void testerStart(Calendar date, int cycle)
   {
-    System.out.println("Schedule.reset " + date.getTime());
+    _tester.start(date, cycle);
   }
 
-  private void check(Calendar date)
+  public void testerEnd(Calendar date, int cycle, int check)
   {
-    System.out.println("Schedule.check " + date.getTime());
-    _check++;
+    _tester.stop(date, cycle, check);
+  }
+
+  public void testerTest(Calendar date, int cycle, int check)
+  {
+    _tester.test(date, cycle, check);
   }
 
   private boolean isCycleStart()
@@ -104,7 +115,7 @@ public class Schedule implements Runnable
       @Override
       public void run()
       {
-        Schedule.this.run();
+        TesterDriver.this.run();
       }
     };
   }

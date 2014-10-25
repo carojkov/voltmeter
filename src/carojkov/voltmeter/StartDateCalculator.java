@@ -2,17 +2,9 @@ package carojkov.voltmeter;
 
 import java.util.Calendar;
 
-public class Scheduler
+public class StartDateCalculator
 {
-  public Schedule makeSchedule(Calendar startTime,
-                               long resetInterval,
-                               long checkInterval,
-                               int cycles)
-  {
-    return new Schedule(startTime, resetInterval, checkInterval, cycles);
-  }
-
-  public Calendar getStartTime(Calendar calendar, StartTime startTime)
+  public static Calendar getStartTime(Calendar calendar, StartTime startTime)
   {
     calendar = (Calendar) calendar.clone();
 
@@ -81,7 +73,7 @@ public class Scheduler
     return calendar;
   }
 
-  private boolean isSecondOn10(Calendar c)
+  private static boolean isSecondOn10(Calendar c)
   {
     if (c.get(Calendar.MILLISECOND) == 0 && c.get(Calendar.SECOND) % 10 == 0)
       return true;
@@ -89,7 +81,7 @@ public class Scheduler
       return false;
   }
 
-  private boolean isMinuteOn_1(Calendar c)
+  private static boolean isMinuteOn_1(Calendar c)
   {
     if (c.get(Calendar.MILLISECOND) == 0 && c.get(Calendar.SECOND) == 0)
       return true;
@@ -97,7 +89,7 @@ public class Scheduler
       return false;
   }
 
-  private boolean isMinuteOn_5(Calendar c)
+  private static boolean isMinuteOn_5(Calendar c)
   {
     if (c.get(Calendar.MILLISECOND) == 0
         && c.get(Calendar.SECOND) == 0
@@ -107,7 +99,7 @@ public class Scheduler
       return false;
   }
 
-  private boolean isMinuteOn_10(Calendar c)
+  private static boolean isMinuteOn_10(Calendar c)
   {
     if (c.get(Calendar.MILLISECOND) == 0
         && c.get(Calendar.SECOND) == 0
@@ -117,7 +109,7 @@ public class Scheduler
       return false;
   }
 
-  private boolean isMidnight(Calendar c)
+  private static boolean isMidnight(Calendar c)
   {
     if (c.get(Calendar.MILLISECOND) == 0
         && c.get(Calendar.SECOND) == 0
@@ -127,5 +119,4 @@ public class Scheduler
     else
       return false;
   }
-
 }

@@ -1,13 +1,11 @@
 package carojkov.voltemeter;
 
-import carojkov.voltmeter.Scheduler;
+import carojkov.voltmeter.StartDateCalculator;
 import carojkov.voltmeter.StartTime;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
@@ -43,9 +41,9 @@ public class T0003
   @Test
   public void testNow()
   {
-    Scheduler scheduler = new Scheduler();
+    StartDateCalculator startDateCalculator = new StartDateCalculator();
 
-    Calendar value = scheduler.getStartTime(_calendar, StartTime.NOW);
+    Calendar value = startDateCalculator.getStartTime(_calendar, StartTime.NOW);
 
     check(value,
           year,
@@ -61,9 +59,9 @@ public class T0003
   @Test
   public void testMinute()
   {
-    Scheduler scheduler = new Scheduler();
+    StartDateCalculator startDateCalculator = new StartDateCalculator();
 
-    Calendar value = scheduler.getStartTime(_calendar, StartTime.MINUTE);
+    Calendar value = startDateCalculator.getStartTime(_calendar, StartTime.MINUTE);
 
     check(value,
           year,
@@ -79,9 +77,9 @@ public class T0003
   @Test
   public void testMinuteOn5()
   {
-    Scheduler scheduler = new Scheduler();
+    StartDateCalculator startDateCalculator = new StartDateCalculator();
 
-    Calendar value = scheduler.getStartTime(_calendar, StartTime.MINUTE_ON_5);
+    Calendar value = startDateCalculator.getStartTime(_calendar, StartTime.MINUTE_ON_5);
 
     check(value,
           year,
@@ -97,9 +95,9 @@ public class T0003
   @Test
   public void testMinuteOn10()
   {
-    Scheduler scheduler = new Scheduler();
+    StartDateCalculator startDateCalculator = new StartDateCalculator();
 
-    Calendar value = scheduler.getStartTime(_calendar,
+    Calendar value = startDateCalculator.getStartTime(_calendar,
                                             StartTime.MINUTE_ON_10);
     check(value,
           year,
@@ -115,9 +113,9 @@ public class T0003
   @Test
   public void testDay()//midnight
   {
-    Scheduler scheduler = new Scheduler();
+    StartDateCalculator startDateCalculator = new StartDateCalculator();
 
-    Calendar value = scheduler.getStartTime(_calendar, StartTime.DAY);
+    Calendar value = startDateCalculator.getStartTime(_calendar, StartTime.DAY);
 
     check(value, year, month, day, Calendar.AM, 0, 0, 0, 0);
   }

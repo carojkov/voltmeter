@@ -1,8 +1,9 @@
 package carojkov.voltemeter;
 
-import carojkov.voltmeter.Schedule;
-import carojkov.voltmeter.Scheduler;
+import carojkov.voltmeter.StartDateCalculator;
 import carojkov.voltmeter.StartTime;
+import carojkov.voltmeter.Tester;
+import carojkov.voltmeter.TesterDriver;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +13,7 @@ import java.util.Calendar;
 /**
  * Test Scheduler class (2014-9-14 3:53:34:345 PM)
  */
-public class T0010
+public class T0010 implements Tester
 {
   private final static int year = 2014;
   private final static int month = 9;
@@ -41,18 +42,46 @@ public class T0010
     _calendar.set(Calendar.MILLISECOND, millisecond);
   }
 
+  @Override
+  public void start(Calendar date, int cycle)
+  {
+    System.out.println("T0010.start [" + cycle + "] " + date.getTime());
+  }
+
+  @Override
+  public void stop(Calendar date, int cycle, int check)
+  {
+    System.out.println("T0010.stop["
+                       + cycle
+                       + ':'
+                       + check
+                       + "] "
+                       + date.getTime());
+  }
+
+  @Override
+  public void test(Calendar date, int cycle, int check)
+  {
+    System.out.println("T0010.test["
+                       + cycle
+                       + ':'
+                       + check
+                       + "] "
+                       + date.getTime());
+  }
+
   @Test
   public void test() throws InterruptedException
   {
-    Scheduler scheduler = new Scheduler();
+    StartDateCalculator startDateCalculator = new StartDateCalculator();
 
-    Calendar startTime = scheduler.getStartTime(_calendar,
-                                                StartTime.NOW);
+    Calendar startTime = startDateCalculator.getStartTime(_calendar,
+                                                          StartTime.NOW);
 
-    Schedule s = new Schedule(startTime, 10, 2, 3);
-
-    Thread.sleep(23487655);
-
+    TesterDriver s = new TesterDriver(this, startTime, 10, 2, 3);
+    while (!s.isComplete()) {
+      Thread.sleep(1000);
+    }
   }
 
   private void check(Calendar c,
