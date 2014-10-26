@@ -18,7 +18,6 @@ public class TestDriver implements Runnable
   private Calendar _cycleEnd;
   private Calendar _nextTrigger;
   private int _cycle = -1;
-  private int _check = 0;
 
   private final TestStand _testStand;
 
@@ -62,13 +61,11 @@ public class TestDriver implements Runnable
       boolean isFirst = _cycle == -1;
       _cycle++;
       boolean isLast = _cycle == _cycles;
-      _testStand.reset(_nextTrigger, _cycle, _check, isFirst, isLast);
+      _testStand.reset(_nextTrigger, _cycle, isFirst, isLast);
       _cycleEnd = getDatePastInterval(_cycleEnd, _cycleDuration);
-      _check = 0;
     }
     else {
-      _testStand.test(_nextTrigger, _cycle, _check);
-      _check++;
+      _testStand.test(_nextTrigger, _cycle);
     }
 
     if (_cycle == _cycles)

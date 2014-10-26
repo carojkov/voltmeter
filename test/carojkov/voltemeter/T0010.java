@@ -50,7 +50,6 @@ public class T0010 implements TestStand
   @Override
   public void reset(Calendar date,
                     int cycle,
-                    int check,
                     boolean isFirst,
                     boolean isLast)
   {
@@ -59,8 +58,6 @@ public class T0010 implements TestStand
                  + ':'
                  + cycle
                  + ':'
-                 + check
-                 + ':'
                  + isFirst
                  + ':'
                  + isLast;
@@ -68,14 +65,12 @@ public class T0010 implements TestStand
   }
 
   @Override
-  public void test(Calendar date, int cycle, int check)
+  public void test(Calendar date, int cycle)
   {
     String str = "measure:"
                  + date.getTime()
                  + ':'
-                 + cycle
-                 + ':'
-                 + check;
+                 + cycle;
     Assert.assertEquals(_expected.removeFirst(), str);
   }
 
@@ -87,22 +82,22 @@ public class T0010 implements TestStand
                                                           StartTime.NOW);
 
     _expected = new LinkedList<>();
-    _expected.add("reset:Tue Oct 14 15:53:40 PDT 2014:0:0:true:false");
-    _expected.add("measure:Tue Oct 14 15:53:42 PDT 2014:0:0");
-    _expected.add("measure:Tue Oct 14 15:53:44 PDT 2014:0:1");
-    _expected.add("measure:Tue Oct 14 15:53:46 PDT 2014:0:2");
-    _expected.add("measure:Tue Oct 14 15:53:48 PDT 2014:0:3");
-    _expected.add("reset:Tue Oct 14 15:53:50 PDT 2014:1:4:false:false");
-    _expected.add("measure:Tue Oct 14 15:53:52 PDT 2014:1:0");
-    _expected.add("measure:Tue Oct 14 15:53:54 PDT 2014:1:1");
-    _expected.add("measure:Tue Oct 14 15:53:56 PDT 2014:1:2");
-    _expected.add("measure:Tue Oct 14 15:53:58 PDT 2014:1:3");
-    _expected.add("reset:Tue Oct 14 15:54:00 PDT 2014:2:4:false:false");
-    _expected.add("measure:Tue Oct 14 15:54:02 PDT 2014:2:0");
-    _expected.add("measure:Tue Oct 14 15:54:04 PDT 2014:2:1");
-    _expected.add("measure:Tue Oct 14 15:54:06 PDT 2014:2:2");
-    _expected.add("measure:Tue Oct 14 15:54:08 PDT 2014:2:3");
-    _expected.add("reset:Tue Oct 14 15:54:10 PDT 2014:3:4:false:true");
+    _expected.add("reset:Tue Oct 14 15:53:40 PDT 2014:0:true:false");
+    _expected.add("measure:Tue Oct 14 15:53:42 PDT 2014:0");
+    _expected.add("measure:Tue Oct 14 15:53:44 PDT 2014:0");
+    _expected.add("measure:Tue Oct 14 15:53:46 PDT 2014:0");
+    _expected.add("measure:Tue Oct 14 15:53:48 PDT 2014:0");
+    _expected.add("reset:Tue Oct 14 15:53:50 PDT 2014:1:false:false");
+    _expected.add("measure:Tue Oct 14 15:53:52 PDT 2014:1");
+    _expected.add("measure:Tue Oct 14 15:53:54 PDT 2014:1");
+    _expected.add("measure:Tue Oct 14 15:53:56 PDT 2014:1");
+    _expected.add("measure:Tue Oct 14 15:53:58 PDT 2014:1");
+    _expected.add("reset:Tue Oct 14 15:54:00 PDT 2014:2:false:false");
+    _expected.add("measure:Tue Oct 14 15:54:02 PDT 2014:2");
+    _expected.add("measure:Tue Oct 14 15:54:04 PDT 2014:2");
+    _expected.add("measure:Tue Oct 14 15:54:06 PDT 2014:2");
+    _expected.add("measure:Tue Oct 14 15:54:08 PDT 2014:2");
+    _expected.add("reset:Tue Oct 14 15:54:10 PDT 2014:3:false:true");
 
     TestDriver s = new TestDriver(this, startTime, 10, 2, 3);
     while (!s.isComplete()) {

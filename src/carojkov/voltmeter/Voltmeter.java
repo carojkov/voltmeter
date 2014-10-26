@@ -34,7 +34,6 @@ public class Voltmeter implements TestStand
   @Override
   public void reset(Calendar date,
                     int cycle,
-                    int check,
                     boolean isFirst,
                     boolean isLast)
   {
@@ -44,23 +43,22 @@ public class Voltmeter implements TestStand
     }
 
     if (!isFirst || isLast) {
-      test(date, cycle, check);
+      test(date, cycle);
     }
 
     System.out.println();
     resetVoltage();
 
     if (!isLast)
-      test(date, cycle, check);
+      test(date, cycle);
   }
 
   @Override
-  public void test(Calendar date, int cycle, int check)
+  public void test(Calendar date, int cycle)
   {
     float[] values = measure();
-    String str = String.format("%s\t%d\t%f\t%f",
+    String str = String.format("%s\t%f\t%f",
                                date.getTime(),
-                               check,
                                values[0],
                                values[1]);
 

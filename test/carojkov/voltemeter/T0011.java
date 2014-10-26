@@ -50,7 +50,6 @@ public class T0011 implements TestStand
   @Override
   public void reset(Calendar date,
                     int cycle,
-                    int check,
                     boolean isFirst,
                     boolean isLast)
   {
@@ -59,8 +58,6 @@ public class T0011 implements TestStand
                  + ':'
                  + cycle
                  + ':'
-                 + check
-                 + ':'
                  + isFirst
                  + ':'
                  + isLast;
@@ -68,14 +65,12 @@ public class T0011 implements TestStand
   }
 
   @Override
-  public void test(Calendar date, int cycle, int check)
+  public void test(Calendar date, int cycle)
   {
     String str = "measure:"
                  + date.getTime()
                  + ':'
-                 + cycle
-                 + ':'
-                 + check;
+                 + cycle;
     Assert.assertEquals(_expected.removeFirst(), str);
   }
 
@@ -88,10 +83,10 @@ public class T0011 implements TestStand
 
     _expected = new LinkedList<>();
 
-    _expected.add("reset:Tue Oct 14 15:53:40 PDT 2014:0:0:true:false");
-    _expected.add("reset:Tue Oct 14 15:53:50 PDT 2014:1:0:false:false");
-    _expected.add("reset:Tue Oct 14 15:54:00 PDT 2014:2:0:false:false");
-    _expected.add("reset:Tue Oct 14 15:54:10 PDT 2014:3:0:false:true");
+    _expected.add("reset:Tue Oct 14 15:53:40 PDT 2014:0:true:false");
+    _expected.add("reset:Tue Oct 14 15:53:50 PDT 2014:1:false:false");
+    _expected.add("reset:Tue Oct 14 15:54:00 PDT 2014:2:false:false");
+    _expected.add("reset:Tue Oct 14 15:54:10 PDT 2014:3:false:true");
 
     TestDriver s = new TestDriver(this, startTime, 10, 10, 3);
     while (!s.isComplete()) {
