@@ -8,7 +8,7 @@ find . -name '*.class' | xargs -I {0} rm {0}
 
 $JAVA_HOME/bin/javac src/carojkov/voltmeter/*.java
 
-$args="-in /dev/ttyACM0 -start now -cycle 60 -check 5 -cycles 3";
+args="-in /dev/ttyACM0 -start now -cycle 60 -check 5 -cycles 3"
 
 nohup $JAVA_HOME/bin/java -cp src carojkov.voltmeter.Main $args >>/home/carojkov/projects/voltmeter/output.log &
 
