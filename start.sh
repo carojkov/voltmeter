@@ -6,11 +6,11 @@ JAVA_HOME=/opt/jdk1.7.0_65
 
 find . -name '*.class' | xargs -I {0} rm {0}
 
-$JAVA_HOME/bin/javac src/carojkov/voltmeter/Voltmeter.java
+$JAVA_HOME/bin/javac src/carojkov/voltmeter/*.java
 
-TIME="$[1 * 60]"
+$args="-in /dev/ttyACM0 -start now -cycle 60 -check 5 -cycles 3";
 
-nohup $JAVA_HOME/bin/java -cp src carojkov.voltmeter.Voltmeter /dev/ttyACM0 9999999 $TIME >>/home/carojkov/projects/voltmeter/output.log &
+nohup $JAVA_HOME/bin/java -cp src carojkov.voltmeter.Main $args >>/home/carojkov/projects/voltmeter/output.log &
 
 sleep 3
 

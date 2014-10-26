@@ -14,12 +14,23 @@ public class T0020
   @Test
   public void testEnum()
   {
+    Args args = Args.parse(new String[]{"xxx", "now"});
+
+    StartTime e = args.getArgEnum(StartTime.class, "xxx");
+
+    Assert.assertEquals(StartTime.NOW, e);
+  }
+
+  @Test
+  public void testEnumCapital()
+  {
     Args args = Args.parse(new String[]{"xxx", "NOW"});
 
     StartTime e = args.getArgEnum(StartTime.class, "xxx");
 
     Assert.assertEquals(StartTime.NOW, e);
   }
+
 
   @Test
   public void test1Second()

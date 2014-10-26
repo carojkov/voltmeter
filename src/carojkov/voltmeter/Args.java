@@ -78,6 +78,8 @@ public class Args
   {
     String value = getArg(key);
 
+    value = value.toUpperCase();
+
     return Enum.valueOf(e, value);
   }
 
