@@ -3,15 +3,12 @@ package carojkov.voltmeter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.Calendar;
-import java.util.Date;
 
 public class Voltmeter implements TestStand
 {
   private RandomAccessFile _meter;
   private float _voltFactor = 0.0556f;
-  private int _probeCounter = 0;
   private boolean _isVerbose = false;
 
   private DecimalFormat _format = new DecimalFormat("0000");
@@ -40,36 +37,67 @@ public class Voltmeter implements TestStand
                     boolean isFirst,
                     boolean isLast)
   {
+    if (isFirst) {
+      configure();
+      reset();
+    }
 
+    if (! isFirst || isLast) {
+      test(date, cycle, check);
+    }
+
+    resetVoltage();
+
+    test(date, cycle, check);
   }
 
   @Override
   public void test(Calendar date, int cycle, int check)
   {
+    float[] values = measure();
+    String str = String.format("%s\t%d\t%f\tf",
+                               date.getTime(),
+                               check,
+                               values[0],
+                               values[1]);
 
+    System.out.println(str);
   }
 
-  private void reset() throws IOException
+  public float[] measure()
+  {
+    try {
+      switchOn();
+      return readVoltage();
+    } finally {
+      switchOff();
+    }
+  }
+
+  private void reset()
   {
     send("R\r");
     String feedback = read();
     log(feedback);
   }
 
-  private void resetVoltage() throws InterruptedException, IOException
+  private void resetVoltage()
   {
     send("PO,B,1,1\r");
     String feedback = read();
     assert "OK".equals(feedback);
+    try {
+      Thread.sleep(1000 * 2);
+    } catch (InterruptedException e) {
 
-    Thread.sleep(1000 * 2);
+    }
 
     send("PO,B,1,0\r");
     feedback = read();
     assert "OK".equals(feedback);
   }
 
-  private void switchOn() throws IOException
+  private void switchOn()
   {
     send("PO,B,0,1\r");
     String feedback = read();
@@ -77,7 +105,7 @@ public class Voltmeter implements TestStand
     log(feedback);
   }
 
-  private void switchOff() throws IOException
+  private void switchOff()
   {
     send("PO,B,0,0\r");
     String feedback = read();
@@ -91,55 +119,62 @@ public class Voltmeter implements TestStand
       System.out.println(message);
   }
 
-  private void configure() throws IOException
+  private void configure()
   {
     send("C,3,0,0,2\r");
     String feedback = read();
     log(feedback);
   }
 
-  private void send(String command) throws IOException
+  private void send(String command)
   {
-    _meter.write(command.getBytes());
+    try {
+      _meter.write(command.getBytes());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
-  private String read() throws IOException
+  private String read()
   {
-    byte[] buffer = new byte[256];
-    int i;
+    try {
+      byte[] buffer = new byte[256];
+      int i;
 
-    i = _meter.read(buffer);
+      i = _meter.read(buffer);
 
-    return new String(buffer, 0, i);
+      return new String(buffer, 0, i);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return null;
   }
 
   public void run()
   {
     try {
-      switchOn();
-      readVoltage();
-      switchOff();
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
   }
 
-  private void readVoltage() throws IOException, ParseException
+  private float[] readVoltage()
   {
-    send("A\r");
+    float[] result = new float[]{-1, -1};
 
-    String feedback = read();// A,0024,0008
-    String[] voltage = feedback.split(",");
+    try {
+      send("A\r");
+      String value = read();// A,0024,0008
+      String[] valueParts = value.split(",");
 
-    if (voltage.length != 3) {
-      log("error: [" + feedback + "]");
-      return;
+      result[0] = _format.parse(valueParts[1]).intValue() * _voltFactor;
+      result[1] = _format.parse(valueParts[2]).intValue() * _voltFactor;
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
-    float v0 = _format.parse(voltage[1]).intValue() * _voltFactor;
-    float v1 = _format.parse(voltage[2]).intValue() * _voltFactor;
-
-    log(new Date() + "\t (" + _probeCounter + ")" + ":\t" + v0 + '\t' + v1);
+    return result;
   }
 
   private void close() throws Exception

@@ -70,7 +70,7 @@ public class T0011 implements TestStand
   @Override
   public void test(Calendar date, int cycle, int check)
   {
-    String str = "test:"
+    String str = "measure:"
                  + date.getTime()
                  + ':'
                  + cycle
