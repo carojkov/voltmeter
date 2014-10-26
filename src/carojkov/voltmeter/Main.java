@@ -34,6 +34,7 @@ public class Main
     long cycle = args.getArgSeconds("-cycle");
     long check = args.getArgSeconds("-check");
     int cycles = args.getArgInt("-cycles");
+    _isVerbose = "true".equals(args.getArg("-verbose"));
 
     if (_isVerbose) {
       System.out.println("start-date = " + start.getTime());
@@ -47,7 +48,7 @@ public class Main
 
   public void run()
   {
-    while (_driver.isComplete()) {
+    while (! _driver.isComplete()) {
       try {
         Thread.sleep(5 * 1000);
       } catch (InterruptedException e) {
