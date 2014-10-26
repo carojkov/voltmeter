@@ -49,7 +49,8 @@ public class Voltmeter implements TestStand
 
     resetVoltage();
 
-    test(date, cycle, check);
+    if (!isLast)
+      test(date, cycle, check);
   }
 
   @Override
