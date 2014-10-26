@@ -20,21 +20,20 @@ public class Main
                                                       t);
 
     String voltmeterFile = _args.getArg("-in");
+    long cycle = args.getArgSeconds("-cycle");
+    long check = args.getArgSeconds("-check");
+    int cycles = args.getArgInt("-cycles");
+    _isVerbose = "true".equals(args.getArg("-verbose"));
 
     Voltmeter voltmeter = null;
 
     try {
-      voltmeter = new Voltmeter(voltmeterFile);
+      voltmeter = new Voltmeter(voltmeterFile, _isVerbose);
     } catch (IOException e) {
       e.printStackTrace();
 
       return;
     }
-
-    long cycle = args.getArgSeconds("-cycle");
-    long check = args.getArgSeconds("-check");
-    int cycles = args.getArgInt("-cycles");
-    _isVerbose = "true".equals(args.getArg("-verbose"));
 
     if (_isVerbose) {
       System.out.println("start-date = " + start.getTime());

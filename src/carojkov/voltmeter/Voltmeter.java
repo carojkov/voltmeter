@@ -13,9 +13,10 @@ public class Voltmeter implements TestStand
 
   private DecimalFormat _format = new DecimalFormat("0000");
 
-  public Voltmeter(String meterFile) throws IOException
+  public Voltmeter(String meterFile, boolean isVerbose) throws IOException
   {
     _meter = new RandomAccessFile(meterFile, "rwd");
+    _isVerbose = isVerbose;
 
     Runtime.getRuntime().addShutdownHook(new Thread()
     {
@@ -38,11 +39,11 @@ public class Voltmeter implements TestStand
                     boolean isLast)
   {
     if (isFirst) {
-      configure();
       reset();
+      configure();
     }
 
-    if (! isFirst || isLast) {
+    if (!isFirst || isLast) {
       test(date, cycle, check);
     }
 
@@ -55,7 +56,7 @@ public class Voltmeter implements TestStand
   public void test(Calendar date, int cycle, int check)
   {
     float[] values = measure();
-    String str = String.format("%s\t%d\t%f\tf",
+    String str = String.format("%s\t%d\t%f\t%f",
                                date.getTime(),
                                check,
                                values[0],
@@ -166,6 +167,9 @@ public class Voltmeter implements TestStand
     try {
       send("A\r");
       String value = read();// A,0024,0008
+
+      log("raw-value: " + value);
+
       String[] valueParts = value.split(",");
 
       result[0] = _format.parse(valueParts[1]).intValue() * _voltFactor;
