@@ -2,13 +2,14 @@ package carojkov.voltmeter;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.logging.Logger;
 
 public class Main
 {
   private Args _args;
 
   private TestDriver _driver;
-  private boolean _isVerbose;
+  private Logger _logger = Logger.getLogger(Main.class.getName());
 
   public Main(Args args)
   {
@@ -19,35 +20,37 @@ public class Main
     Calendar start = StartDateCalculator.getStartTime(Calendar.getInstance(),
                                                       t);
 
-    String voltmeterFile = _args.getArg("-in");
+    String device = _args.getArg("-in");
     long cycle = args.getArgSeconds("-cycle");
     long check = args.getArgSeconds("-check");
     int cycles = args.getArgInt("-cycles");
-    _isVerbose = "true".equals(args.getArg("-verbose"));
 
     Voltmeter voltmeter = null;
 
     try {
-      voltmeter = new Voltmeter(voltmeterFile, _isVerbose);
+      voltmeter = new Voltmeter(device);
     } catch (IOException e) {
       e.printStackTrace();
 
       return;
     }
 
-    if (_isVerbose) {
-      System.out.println("start-date = " + start.getTime());
-      System.out.println("cycle = " + cycle);
-      System.out.println("check = " + check);
-      System.out.println("cycles = " + cycles);
-    }
+    logInfo("start-date = " + start.getTime());
+    logInfo("cycle = " + cycle);
+    logInfo("check = " + check);
+    logInfo("cycles = " + cycles);
 
     _driver = new TestDriver(voltmeter, start, cycle, check, cycles);
   }
 
+  private void logInfo(String message)
+  {
+    _logger.info(message);
+  }
+
   public void run()
   {
-    while (! _driver.isComplete()) {
+    while (!_driver.isComplete()) {
       try {
         Thread.sleep(5 * 1000);
       } catch (InterruptedException e) {

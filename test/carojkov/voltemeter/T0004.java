@@ -53,7 +53,8 @@ public class T0004
   {
     StartDateCalculator startDateCalculator = new StartDateCalculator();
 
-    Calendar value = startDateCalculator.getStartTime(_calendar, StartTime.MINUTE);
+    Calendar value = startDateCalculator.getStartTime(_calendar,
+                                                      StartTime.MINUTE);
 
     check(value, year, month, day, am_pm, hour, minute, second, millisecond);
   }
@@ -63,7 +64,8 @@ public class T0004
   {
     StartDateCalculator startDateCalculator = new StartDateCalculator();
 
-    Calendar value = startDateCalculator.getStartTime(_calendar, StartTime.MINUTE_ON_5);
+    Calendar value = startDateCalculator.getStartTime(_calendar,
+                                                      StartTime.MINUTE_ON_5);
 
     check(value, year, month, day, am_pm, hour, minute, second, millisecond);
   }
@@ -74,7 +76,7 @@ public class T0004
     StartDateCalculator startDateCalculator = new StartDateCalculator();
 
     Calendar value = startDateCalculator.getStartTime(_calendar,
-                                            StartTime.MINUTE_ON_10);
+                                                      StartTime.MINUTE_ON_10);
     check(value, year, month, day, am_pm, hour, minute, second, millisecond);
   }
 

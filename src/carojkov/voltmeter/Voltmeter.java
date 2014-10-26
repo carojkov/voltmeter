@@ -4,19 +4,21 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.DecimalFormat;
 import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Voltmeter implements TestStand
 {
+  private Logger _logger = Logger.getLogger(Voltmeter.class.getName());
+
   private RandomAccessFile _meter;
   private float _voltFactor = 0.0556f;
-  private boolean _isVerbose = false;
 
   private DecimalFormat _format = new DecimalFormat("0000");
 
-  public Voltmeter(String meterFile, boolean isVerbose) throws IOException
+  public Voltmeter(String device) throws IOException
   {
-    _meter = new RandomAccessFile(meterFile, "rwd");
-    _isVerbose = isVerbose;
+    _meter = new RandomAccessFile(device, "rwd");
 
     Runtime.getRuntime().addShutdownHook(new Thread()
     {
@@ -37,6 +39,12 @@ public class Voltmeter implements TestStand
                     boolean isFirst,
                     boolean isLast)
   {
+    logFine(String.format("reset %s %d %s %s",
+                          date.getTime(),
+                          cycle,
+                          isFirst,
+                          isLast));
+
     if (isFirst) {
       reset();
       configure();
@@ -56,6 +64,10 @@ public class Voltmeter implements TestStand
   @Override
   public void test(Calendar date, int cycle)
   {
+    logFine(String.format("test %s %d %s %s",
+                          date.getTime(),
+                          cycle));
+
     float[] values = measure();
     String str = String.format("%s\t%f\t%f",
                                date.getTime(),
@@ -79,7 +91,7 @@ public class Voltmeter implements TestStand
   {
     send("R\r");
     String feedback = read();
-    log(feedback);
+    logInfo(feedback);
   }
 
   private void resetVoltage()
@@ -103,7 +115,7 @@ public class Voltmeter implements TestStand
     send("PO,B,0,1\r");
     String feedback = read();
     assert "OK".equals(feedback);
-    log(feedback);
+    logInfo(feedback);
   }
 
   private void switchOff()
@@ -111,20 +123,24 @@ public class Voltmeter implements TestStand
     send("PO,B,0,0\r");
     String feedback = read();
     assert "OK".equals(feedback);
-    log(feedback);
+    logInfo(feedback);
   }
 
-  private void log(String message)
+  private void logInfo(String message)
   {
-    if (_isVerbose)
-      System.out.println(message);
+    _logger.info(message);
+  }
+
+  private void logFine(String message)
+  {
+    _logger.fine(message);
   }
 
   private void configure()
   {
     send("C,3,0,0,2\r");
     String feedback = read();
-    log(feedback);
+    logInfo(feedback);
   }
 
   private void send(String command)
@@ -132,7 +148,7 @@ public class Voltmeter implements TestStand
     try {
       _meter.write(command.getBytes());
     } catch (IOException e) {
-      e.printStackTrace();
+      _logger.log(Level.WARNING, e.getMessage(), e);
     }
   }
 
@@ -146,18 +162,10 @@ public class Voltmeter implements TestStand
 
       return new String(buffer, 0, i);
     } catch (IOException e) {
-      e.printStackTrace();
+      _logger.log(Level.WARNING, e.getMessage(), e);
     }
 
     return null;
-  }
-
-  public void run()
-  {
-    try {
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
   }
 
   private float[] readVoltage()
@@ -168,14 +176,14 @@ public class Voltmeter implements TestStand
       send("A\r");
       String value = read();// A,0024,0008
 
-      log("raw-value: " + value);
+      logInfo("raw-value: " + value);
 
       String[] valueParts = value.split(",");
 
       result[0] = _format.parse(valueParts[1]).intValue() * _voltFactor;
       result[1] = _format.parse(valueParts[2]).intValue() * _voltFactor;
     } catch (Exception e) {
-      e.printStackTrace();
+      _logger.log(Level.WARNING, e.getMessage(), e);
     }
 
     return result;

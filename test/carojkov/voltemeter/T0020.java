@@ -3,7 +3,6 @@ package carojkov.voltemeter;
 import carojkov.voltmeter.Args;
 import carojkov.voltmeter.StartTime;
 import junit.framework.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -30,7 +29,6 @@ public class T0020
 
     Assert.assertEquals(StartTime.NOW, e);
   }
-
 
   @Test
   public void test1Second()

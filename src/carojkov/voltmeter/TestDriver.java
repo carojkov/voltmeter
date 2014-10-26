@@ -3,9 +3,11 @@ package carojkov.voltmeter;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Logger;
 
 public class TestDriver implements Runnable
 {
+  private Logger _logger = Logger.getLogger(TestDriver.class.getName());
   private final long sec = 1;
   private final long min = sec * 60;
   private final long hour = min * 60;
@@ -47,6 +49,18 @@ public class TestDriver implements Runnable
 
     _timer = new Timer(this.getClass().getName(), true);
     _timer.schedule(createTimerTask(), cycleStart.getTime());
+
+    logInfo(String.format("starting at %s", cycleStart.getTime()));
+  }
+
+  private void logInfo(String message)
+  {
+    _logger.info(message);
+  }
+
+  private void logFine(String message)
+  {
+    _logger.fine(message);
   }
 
   public boolean isComplete()
