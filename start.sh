@@ -14,4 +14,4 @@ nohup $JAVA_HOME/bin/java -cp src carojkov.voltmeter.Main $args >>/home/carojkov
 
 sleep 3
 
-tail -f /home/carojkov/projects/voltmeter/output.log
+tail -f /home/alex/projects/voltmeter/output.log
