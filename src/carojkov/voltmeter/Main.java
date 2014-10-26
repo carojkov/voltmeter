@@ -7,7 +7,8 @@ public class Main
 {
   private Args _args;
 
-  TestDriver _driver;
+  private TestDriver _driver;
+  private boolean _isVerbose;
 
   public Main(Args args)
   {
@@ -33,6 +34,13 @@ public class Main
     long cycle = args.getArgSeconds("-cycle");
     long check = args.getArgSeconds("-check");
     int cycles = args.getArgInt("-cycles");
+
+    if (_isVerbose) {
+      System.out.println("start-date = " + start.getTime());
+      System.out.println("cycle = " + cycle);
+      System.out.println("check = " + check);
+      System.out.println("cycles = " + cycles);
+    }
 
     _driver = new TestDriver(voltmeter, start, cycle, check, cycles);
   }
