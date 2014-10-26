@@ -47,6 +47,7 @@ public class Voltmeter implements TestStand
       test(date, cycle, check);
     }
 
+    System.out.println();
     resetVoltage();
 
     if (!isLast)
