@@ -48,17 +48,11 @@ public class Voltmeter implements TestStand
     if (isFirst) {
       reset();
       configure();
-    }
-
-    if (!isFirst || isLast) {
+    } else {
       test(date, cycle);
     }
 
-    System.out.println();
     resetVoltage();
-
-    if (!isLast)
-      test(date, cycle);
   }
 
   @Override
