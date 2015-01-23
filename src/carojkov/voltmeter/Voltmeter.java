@@ -170,7 +170,7 @@ public class Voltmeter implements TestStand
       send("A\r");
       String value = read();// A,0024,0008
 
-      logInfo("raw-value: " + value);
+      logFine("raw-value: " + value);
 
       String[] valueParts = value.split(",");
 
