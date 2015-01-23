@@ -48,7 +48,8 @@ public class Voltmeter implements TestStand
     if (isFirst) {
       reset();
       configure();
-    } else {
+    }
+    else {
       test(date, cycle);
     }
 
@@ -85,7 +86,7 @@ public class Voltmeter implements TestStand
   {
     send("R\r");
     String feedback = read();
-    logInfo(feedback);
+    logFine(feedback);
   }
 
   private void resetVoltage()
@@ -109,7 +110,7 @@ public class Voltmeter implements TestStand
     send("PO,B,0,1\r");
     String feedback = read();
     assert "OK".equals(feedback);
-    logInfo(feedback);
+    logFine(feedback);
   }
 
   private void switchOff()
@@ -117,7 +118,7 @@ public class Voltmeter implements TestStand
     send("PO,B,0,0\r");
     String feedback = read();
     assert "OK".equals(feedback);
-    logInfo(feedback);
+    logFine(feedback);
   }
 
   private void logInfo(String message)
