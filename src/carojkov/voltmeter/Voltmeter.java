@@ -58,7 +58,7 @@ public class Voltmeter implements TestStand
   @Override
   public void test(Calendar date, int cycle)
   {
-    logFine(String.format("test %s %d %s %s",
+    logFine(String.format("test %s %d",
                           date.getTime(),
                           cycle));
 
