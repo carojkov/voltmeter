@@ -3,7 +3,10 @@ package carojkov.voltmeter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -134,6 +137,11 @@ public class Voltmeter implements TestStand
     _logger.fine(message);
   }
 
+  private void log(Level level, String message, Throwable t)
+  {
+    _logger.log(level, message, t);
+  }
+
   private void configure()
   {
     send("C,3,0,0,2\r");
@@ -168,21 +176,48 @@ public class Voltmeter implements TestStand
 
   private float[] readVoltage()
   {
+    float[] result = null;
+
+    int i = 0;
+
+    List<Exception> exceptions = new ArrayList<>();
+
+    while (i++ < 5 && result == null) {
+      try {
+        result = readVoltageImpl();
+      } catch (Exception e) {
+        exceptions.add(e);
+      }
+    }
+
+    if (exceptions.size() > 0) {
+      for (Exception e : exceptions) {
+        log(Level.WARNING, e.getMessage(), e);
+      }
+    }
+
+    if (result == null)
+      result = new float[]{-1f, -1f};
+
+    return result;
+  }
+
+  private float[] readVoltageImpl() throws ParseException
+  {
     float[] result = new float[]{-1, -1};
 
-    try {
-      send("A\r");
-      String value = read();// A,0024,0008
+    send("A\r");
+    final String value = read();// A,0024,0008
 
-      logFine("raw-value: " + value);
+    logFine("raw-value: " + value);
 
-      String[] valueParts = value.split(",");
+    String[] valueParts = value.split(",");
 
-      result[0] = _format.parse(valueParts[1]).intValue() * _voltFactor;
-      result[1] = _format.parse(valueParts[2]).intValue() * _voltFactor;
-    } catch (Exception e) {
-      _logger.log(Level.WARNING, e.getMessage(), e);
-    }
+    if (valueParts.length < 3)
+      throw new ParseException(value, 0);
+
+    result[0] = _format.parse(valueParts[1]).intValue() * _voltFactor;
+    result[1] = _format.parse(valueParts[2]).intValue() * _voltFactor;
 
     return result;
   }
